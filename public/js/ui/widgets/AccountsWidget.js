@@ -14,7 +14,13 @@ class AccountsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-
+    if (element.length === 0) {
+      throw 'Пустое значение';
+    } else {
+      this.element = element;
+    }
+    this.registerEvents();
+    this.update();
   }
 
   /**
@@ -25,7 +31,14 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-
+    this.element.onclick = (event) => {
+      event.preventDefault();
+      if (event.target.classList.contains('create-account')) {
+        App.getModal('createAccount').element.style.display = 'block';
+      } else {
+        this.onSelectAccount(event.target.closest('.account'))
+      }
+    };
   }
 
   /**
@@ -39,7 +52,14 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
-
+    if (User.current()) {
+      this.clear();
+      Account.list(User.current(), (err, response) => {
+        response.data.forEach(elem => {
+          this.renderItem(elem);
+        });
+      });
+    }
   }
 
   /**
@@ -48,7 +68,9 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-
+    document.querySelectorAll('.account').forEach(elem => {
+      elem.remove();
+    });
   }
 
   /**
@@ -59,7 +81,14 @@ class AccountsWidget {
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
   onSelectAccount( element ) {
+    let active = this.element.querySelectorAll('.active');
 
+    if (active) {
+      active.classList.remove('active');
+    }
+
+    element.classList.add('active');
+    App.showPage('transactions', {account_id: element.dataset.id});
   }
 
   /**
@@ -68,7 +97,12 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item){
-
+    return `<li class="account" data-id=${item.id}>
+      <a href="#">
+        <span>${item.name}</span> /
+        <span>${item.sum} ₽</span>
+      </a>
+    </li>`
   }
 
   /**
@@ -78,6 +112,7 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data){
-
+    const elem = this.getAccountHTML(data);
+    this.element.appendChild(elem);
   }
 }
