@@ -13,8 +13,8 @@ class AsyncForm {
    * через registerEvents()
    * */
   constructor(element) {
-    if (element.length === 0) {
-      throw 'Пустое значение';
+    if (!element) {
+      throw new Error('Пустое значение');
     } else {
       this.element = element;
       this.registerEvents();
@@ -40,15 +40,18 @@ class AsyncForm {
    * }
    * */
   getData() {
-    let obj = {};
-    const form = this.element,
-        formData = new FormData( form ),
-        entries = formData.entries();
+    // let obj = {};
+    // const form = this.element,
+    //     formData = new FormData( form ),
+    //     entries = formData.entries();
 
-    for (let item of entries) {
-      obj[item[ 0 ]] = item[ 1 ]
-    }
-    return obj
+    // for (let item of entries) {
+    //   obj[item[ 0 ]] = item[ 1 ]
+    // }
+    // return obj
+
+    const formData = new FormData(this.element);
+    return Object.fromEntries(formData.entries());
   }
 
   onSubmit(options){

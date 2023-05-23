@@ -47,7 +47,7 @@ class User {
       method: 'GET',
       callback(err, response) {
         if (response.success && response.user) {
-          User.setCurrent(response.user);
+          this.setCurrent(response.user);
         } else {
           User.unsetCurrent();
         }
@@ -90,7 +90,7 @@ class User {
       data,
       callback(err, response) {
         if (response.success) {
-          User.setCurrent(response.user);
+          this.setCurrent(response.user);
         }
         callback(err, response);
       }

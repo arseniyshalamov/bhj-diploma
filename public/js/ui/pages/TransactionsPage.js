@@ -11,8 +11,8 @@ class TransactionsPage {
    * через registerEvents()
    * */
   constructor( element ) {
-    if (element.length === 0) {
-      throw 'Пустое значение';
+    if (!element) {
+      throw new Error('Пустое значение');
     } else {
       this.element = element;
     }
@@ -34,11 +34,14 @@ class TransactionsPage {
    * */
   registerEvents() {
     this.element.onclick = (elem => {
-      this.preventDefault();
-      if (elem.target.classList.contains('.remove-account')) {
+      if (elem.target.closest('.remove-account')) {
         this.removeAccount();
-      } else if (elem.target.closest) {
-        this.removeTransaction(elem.target.closest('.transaction__remove').dataset);
+      }
+
+      let target = elem.target;
+      
+      if (target.classList.contains('transaction__remove')) {
+        this.removeTransaction(target.dataset.id);
       }
     })
   }
@@ -170,9 +173,14 @@ class TransactionsPage {
   renderTransactions(data){
     const content = document.querySelector('.content');
     content.innerHTML = '';
-
-    data.forEach(elem => {
-      content.innerHTML += this.getTransactionHTML(elem);
+    Account.list({}, (err, response) => {
+      if (response.success) {
+        const optionsHTML = response.data.reduce((html, item) => {
+          return html + `<option value="${item.id}">${item.name}</option>`;
+        }, '');
+        accountsSelect.innerHTML = optionsHTML;
+      }
     });
   }
 }
+

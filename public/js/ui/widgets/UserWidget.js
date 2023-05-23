@@ -12,8 +12,8 @@ class UserWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor(element){
-    if (element.length === 0) {
-      throw 'Пустое значение';
+    if (!element) {
+      throw new Error('Пустое значение');
     } else {
       this.element = element;
     }
