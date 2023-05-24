@@ -178,7 +178,7 @@ class TransactionsPage {
         const optionsHTML = response.data.reduce((html, item) => {
           return html + `<option value="${item.id}">${item.name}</option>`;
         }, '');
-        accountsSelect.innerHTML = optionsHTML;
+        content.innerHTML = optionsHTML;
       }
     });
   }
