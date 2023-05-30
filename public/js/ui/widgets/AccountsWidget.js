@@ -35,11 +35,8 @@ class AccountsWidget {
       event.preventDefault();
       if (event.target.classList.contains('create-account')) {
         App.getModal('createAccount').open();
-      } else {
-        const accountElement = event.target.closest('.account');
-        if (accountElement) {
+      } else if (accountElement = event.target.closest('.account')) {
           this.onSelectAccount(accountElement);
-        }
       }
     });
   }
@@ -56,12 +53,11 @@ class AccountsWidget {
    * */
   update() {
     if (User.current()) {
-      this.clear();
       Account.list({}, (err, response) => {
         if (response && response.success) {
+          this.clear();
           response.data.forEach((item) => {
-            const accountHTML = this.getAccountHTML(item);
-            this.element.insertAdjacentHTML('beforeend', accountHTML);
+            this.renderItem(item);
           });
         }
       });
@@ -74,10 +70,7 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-    const accountElements = this.element.querySelectorAll('.account');
-    accountElements.forEach((elem) => {
-      elem.remove();
-    });
+    this.element.innerHTML = '';
   }
 
   /**
@@ -119,7 +112,7 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data){
-    const elem = this.getAccountHTML(data);
-    this.element.appendChild(elem);
+    const elem = document.createRange().createContextualFragment(this.getAccountHTML(data));
+  this.element.appendChild(elem);
   }
 }

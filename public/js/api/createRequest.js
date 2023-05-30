@@ -17,10 +17,9 @@ const createRequest = (options = {}) => {
           formData.append(key, options.data[key]);
         }
         xhr.open(options.method, options.url);
-        xhr.send(formData);
     }
     xhr.responseType = 'json';
-    xhr.load = () => {
+    xhr.onload = () => {
         // היו במקום load - readystatechange
       if (xhr.readyState === 4) {
         options.callback(null, xhr.response);
@@ -32,9 +31,8 @@ const createRequest = (options = {}) => {
     };
   
     try {
-      xhr.send();
+      xhr.send(options.method === 'GET' ? null : formData);
     } catch (e) {
       options.callback(e);
     }
 };
-

@@ -97,12 +97,8 @@ class TransactionsPage {
           this.renderTitle(response.data.name);
         }
       });
-
-      Transaction.list(options, (err, response) => {
-        if (response.success) {
-          this.renderTransactions(response.data);
-        }
-      });
+      
+      this.renderTransactions(options.data);
     }
   }
 
@@ -121,8 +117,8 @@ class TransactionsPage {
    * Устанавливает заголовок в элемент .content-title
    * */
   renderTitle(name){
-    // this.element
-    document.querySelector('.content-title').textContent = name;
+    const contentTitle = this.element.querySelector('.content-title');
+    contentTitle.textContent = name;
   }
 
   /**
@@ -173,14 +169,9 @@ class TransactionsPage {
   renderTransactions(data){
     const content = document.querySelector('.content');
     content.innerHTML = '';
-    Account.list({}, (err, response) => {
-      if (response.success) {
-        const optionsHTML = response.data.reduce((html, item) => {
-          return html + `<option value="${item.id}">${item.name}</option>`;
-        }, '');
-        content.innerHTML = optionsHTML;
-      }
-    });
+    
+    const transactionsHTML = data.map(item => this.getTransactionHTML(item)).join('');
+    content.innerHTML = transactionsHTML;
   }
 }
 
