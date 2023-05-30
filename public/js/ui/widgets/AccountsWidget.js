@@ -35,8 +35,11 @@ class AccountsWidget {
       event.preventDefault();
       if (event.target.classList.contains('create-account')) {
         App.getModal('createAccount').open();
-      } else if (accountElement = event.target.closest('.account')) {
+      } else {
+        const accountElement = event.target.closest('.account');
+        if (accountElement) {
           this.onSelectAccount(accountElement);
+        }
       }
     });
   }
@@ -70,7 +73,10 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-    this.element.innerHTML = '';
+    const accountElements = this.element.querySelectorAll(".account");
+    accountElements.forEach(elem => {
+      elem.remove();
+    });
   }
 
   /**

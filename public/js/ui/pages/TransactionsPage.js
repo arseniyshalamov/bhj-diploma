@@ -38,10 +38,10 @@ class TransactionsPage {
         this.removeAccount();
       }
 
-      let target = elem.target;
-      
-      if (target.classList.contains('transaction__remove')) {
-        this.removeTransaction(target.dataset.id);
+      const transactionRemoveBtn = event.target.closest('.transaction__remove');
+      if (transactionRemoveBtn) {
+        const transactionId = transactionRemoveBtn.dataset.id;
+        this.removeTransaction(transactionId);
       }
     })
   }
@@ -57,12 +57,11 @@ class TransactionsPage {
    * */
   removeAccount() {
     if (this.lastOptions && confirm('Вы действительно хотите удалить счёт?')) {
-      Account.remove({id: this.lastOptions.account_id}, (err, response) => {
+      Account.remove({ id: this.lastOptions.account_id }, (err, response) => {
         if (response.success) {
-          App.updateWidgets();
-          App.updateForms();
+          App.update();
         }
-      })
+      });
     }
   }
 
@@ -169,6 +168,15 @@ class TransactionsPage {
   renderTransactions(data){
     const content = document.querySelector('.content');
     content.innerHTML = '';
+
+    Account.list({}, (err, response) => {
+      if (response.success) {
+        const optionsHTML = response.data.reduce((html, item) => {
+          return html + `<option value="${item.id}">${item.name}</option>`;
+        }, '');
+        content.innerHTML = optionsHTML;
+      }
+    });
     
     const transactionsHTML = data.map(item => this.getTransactionHTML(item)).join('');
     content.innerHTML = transactionsHTML;
