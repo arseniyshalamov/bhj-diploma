@@ -33,17 +33,27 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
-    this.element.onclick = (elem => {
-      if (elem.target.closest('.remove-account')) {
-        this.removeAccount();
-      }
+    const btn = document.getElementsByClassName('btn-danger');
 
-      const transactionRemoveBtn = event.target.closest('.transaction__remove');
-      if (transactionRemoveBtn) {
-        const transactionId = transactionRemoveBtn.dataset.id;
-        this.removeTransaction(transactionId);
-      }
-    })
+    if (!this.lastOptions) {
+      Array.from(btn).forEach((i) => {
+        if (i.classList.contains('remove-account')) {
+          i.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.removeAccount();
+          })
+        }
+      })
+    } else {
+      Array.from(btn).forEach((i) => {
+        if (i.classList.contains('transaction__remove')) {
+          i.addEventListener('click', () => {
+            let id = i.dataset.id;
+            this.removeTransaction(id);
+          })
+        }
+      })
+    }
   }
 
   /**
@@ -72,12 +82,19 @@ class TransactionsPage {
    * либо обновляйте текущую страницу (метод update) и виджет со счетами
    * */
   removeTransaction( id ) {
-    if (confirm('Вы действительно хотите удалить данную транзакцию?')) {
-      Transaction.remove(id, (err, response) => {
-        if (response) {
+    if (!this.lastOptions) {
+      return false
+    } else {
+      console.log(this.lastOptions);
+      let id = this.lastOptions.account_id
+      let obj = { id };
+      console.log(obj);
+      if (window.confirm("Вы уверены?")) {
+        Account.remove(obj, (err, response) => {
+          this.clear();
           App.update();
-        }
-      })
+        })
+      }
     }
   }
 
