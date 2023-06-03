@@ -37,14 +37,14 @@ class TransactionsPage {
       if (elem.target.closest('.remove-account')) {
         this.removeAccount();
       }
-
+  
       const transactionRemoveBtn = elem.target.closest('.transaction__remove');
       if (transactionRemoveBtn) {
         const transactionId = transactionRemoveBtn.dataset.id;
         this.removeTransaction(transactionId);
       }
-    })
-  }
+    });
+  }  
 
   /**
    * Удаляет счёт. Необходимо показать диаголовое окно (с помощью confirm())
@@ -141,8 +141,9 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item){
+    const type = item.type === 'income' ? 'transaction_income' : 'transaction_expense';
     return `
-      <div class="transaction transaction_${item.type} row">
+      <div class="transaction ${type} row">
         <div class="col-md-7 transaction__details">
           <div class="transaction__icon">
               <span class="fa fa-money fa-2x"></span>
@@ -157,8 +158,11 @@ class TransactionsPage {
               ${item.sum} <span class="currency">₽</span>
           </div>
         </div>
+        <div class="col-md-2">
+          <button class="transaction__remove" data-id="${item.id}">Удалить</button>
+        </div>
       </div>
-    `
+    `;
   }
 
   /**
@@ -175,9 +179,11 @@ class TransactionsPage {
           return html + `<option value="${item.id}">${item.name}</option>`;
         }, '');
         content.innerHTML = optionsHTML;
-
+  
         const transactionsHTML = data.map(item => this.getTransactionHTML(item)).join('');
         content.innerHTML += transactionsHTML; // Добавляем список транзакций в конец контента
+        
+        this.renderTitle(response.data.name); // Отображаем название счёта
       }
     });
   }
