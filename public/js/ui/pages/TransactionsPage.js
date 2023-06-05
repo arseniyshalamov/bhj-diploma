@@ -102,7 +102,11 @@ class TransactionsPage {
         }
       });
       
-      this.renderTransactions(options.data);
+      Transaction.list(options, (err, response) => {
+        if (response.success) {
+          this.renderTransactions(response.data);
+        }
+      });
     }
   }
 
@@ -141,9 +145,8 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item){
-    const type = item.type === 'income' ? 'transaction_income' : 'transaction_expense';
     return `
-      <div class="transaction ${type} row">
+      <div class="transaction transaction_${item.type} row">
         <div class="col-md-7 transaction__details">
           <div class="transaction__icon">
               <span class="fa fa-money fa-2x"></span>
@@ -158,34 +161,28 @@ class TransactionsPage {
               ${item.sum} <span class="currency">₽</span>
           </div>
         </div>
-        <div class="col-md-2">
-          <button class="transaction__remove" data-id="${item.id}">Удалить</button>
+        <div class="col-md-2 transaction__controls">
+            <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+              <i class="fa fa-trash"></i>  
+            </button>
         </div>
       </div>
-    `;
+    `
   }
 
   /**
    * Отрисовывает список транзакций на странице
    * используя getTransactionHTML
    * */
-  renderTransactions(data){
+  renderTransactions(data) {
     const content = document.querySelector('.content');
     content.innerHTML = '';
-
-    Account.list({}, (err, response) => {
-      if (response.success) {
-        const optionsHTML = response.data.reduce((html, item) => {
-          return html + `<option value="${item.id}">${item.name}</option>`;
-        }, '');
-        content.innerHTML = optionsHTML;
   
-        const transactionsHTML = data.map(item => this.getTransactionHTML(item)).join('');
-        content.innerHTML += transactionsHTML; // Добавляем список транзакций в конец контента
-        
-        this.renderTitle(response.data.name); // Отображаем название счёта
-      }
-    });
+    const transactionsHTML = data.reduce((html, item) => {
+      return html + this.getTransactionHTML(item);
+    }, '');
+  
+    content.innerHTML = transactionsHTML;
   }
 }
 
